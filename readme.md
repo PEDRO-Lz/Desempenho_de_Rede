@@ -33,7 +33,7 @@ Dsmp_Iperf/
 │   │   ├── utils/
 │   │   │   ├── fileUtils.ts       # Utilitários para leitura/escrita de JSON
 │   │   │   └── iperfParser.ts     # Lógica de parsing dos dados do iperf3
-│   │   └── server.ts            # Arquivo principal do servidor Express
+│   │   └── server.ts              # Arquivo principal do servidor Express
 │   ├── uploads/                   # Pasta temporária para arquivos enviados (deve ser criada ou gerenciada)
 │   ├── package.json
 │   └── tsconfig.json
@@ -60,6 +60,19 @@ Dsmp_Iperf/
 │   └── 5G_80mhz_udp.json
 └── README.md                      # Este arquivo
 ```
+## Detalhes da Implementação
+
+*   **Backend (`server.ts`):**
+    *   Utiliza `multer` para lidar com o upload de arquivos, salvando-os temporariamente na pasta `uploads/`.
+    *   Para cada arquivo, `fileUtils.ts` (`readJsonFile`) lê o conteúdo.
+    *   `iperfParser.ts` (`parseIperf`) processa o JSON bruto, extraindo informações relevantes do sumário (`end` section) e dos intervalos (`intervals` section) para TCP e UDP.
+    *   Os dados processados de todos os arquivos são enviados de volta ao frontend.
+    *   Os arquivos temporários são excluídos após o processamento.
+*   **Frontend (`Graficos.tsx`):**
+    *   Recebe os dados processados do backend (via `localStorage` após o upload em `FileUpload.tsx`).
+    *   Renderiza condicionalmente os gráficos com base nos dados disponíveis e no protocolo (TCP/UDP).
+    *   A função `renderInPairsWithPlaceholders` organiza os gráficos em pares, adicionando um placeholder se houver um número ímpar de gráficos visíveis.
+
 
 ## Pré-requisitos
 
@@ -73,7 +86,7 @@ Siga os passos abaixo para configurar e rodar o projeto localmente:
 
 **1. Clonar o Repositório:**
    ```bash
-   git clone <url-do-seu-repositorio>
+   git clone https://github.com/PEDRO-Lz/Desempenho_de_Rede.git
    cd Dsmp_Iperf
    ```
 
@@ -85,8 +98,8 @@ Siga os passos abaixo para configurar e rodar o projeto localmente:
    ```
    O backend estará rodando em `http://localhost:3001`. Certifique-se que a pasta `backend/uploads/` exista ou que o `multer` tenha permissão para criá-la, caso contrário, crie-a manualmente.
 
-**3. Configurar o Frontend:**
-  em outro terminal
+**3. Configurar o Frontend:**  
+  Em outro terminal
    ```bash
    cd frontend
    npm install
@@ -128,17 +141,3 @@ Siga os passos abaixo para configurar e rodar o projeto localmente:
    *   Este projeto inclui uma pasta `testes/` com arquivos JSON de exemplo.
    *   Na página inicial da aplicação, clique para escolher arquivos e selecione de 1 a 6 arquivos da pasta `testes/` (ou os seus próprios).
    *   Clique em "Enviar".
-
-## Detalhes da Implementação
-
-*   **Backend (`server.ts`):**
-    *   Utiliza `multer` para lidar com o upload de arquivos, salvando-os temporariamente na pasta `uploads/`.
-    *   Para cada arquivo, `fileUtils.ts` (`readJsonFile`) lê o conteúdo.
-    *   `iperfParser.ts` (`parseIperf`) processa o JSON bruto, extraindo informações relevantes do sumário (`end` section) e dos intervalos (`intervals` section) para TCP e UDP.
-    *   Os dados processados de todos os arquivos são enviados de volta ao frontend.
-    *   Os arquivos temporários são excluídos após o processamento.
-*   **Frontend (`Graficos.tsx`):**
-    *   Recebe os dados processados do backend (via `localStorage` após o upload em `FileUpload.tsx`).
-    *   Utiliza funções auxiliares (`prepareLineChartData`, `prepareBarChartData`) para formatar os dados para a biblioteca `Recharts`.
-    *   Renderiza condicionalmente os gráficos com base nos dados disponíveis e no protocolo (TCP/UDP).
-    *   A função `renderInPairsWithPlaceholders` organiza os gráficos em pares, adicionando um placeholder se houver um número ímpar de gráficos visíveis.
